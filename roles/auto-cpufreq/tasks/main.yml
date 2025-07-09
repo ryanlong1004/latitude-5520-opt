@@ -1,0 +1,58 @@
+---
+- name: Ensure required packages for auto-cpufreq installation
+  apt:
+    name:
+      - git
+      - python3-pip
+      - python3-venv
+    state: present
+    update_cache: yes
+
+- name: Clone auto-cpufreq repository
+  git:
+    repo: 'https://github.com/AdnanHodzic/auto-cpufreq.git'
+    dest: '/opt/auto-cpufreq'
+    version: master
+
+- name: Install auto-cpufreq in virtualenv
+  command: >
+    python3 -m venv /opt/auto-cpufreq/venv &&
+    /opt/auto-cpufreq/venv/bin/pip install --upgrade pip &&
+    /opt/auto-cpufreq/venv/bin/pip install .
+  args:
+    chdir: /opt/auto-cpufreq
+    creates: /opt/auto-cpufreq/venv/bin/auto-cpufreq
+
+- name: Create systemd service file for auto-cpufreq
+  copy:
+    dest: /etc/systemd/system/auto-cpufreq.service
+    content: |
+      [Unit]
+      Description=auto-cpufreq - Automatic CPU speed & power optimizer for Linux
+      After=network.target
+
+      [Service]
+      Type=simple
+      ExecStart=/opt/auto-cpufreq/venv/bin/auto-cpufreq --daemon
+      Restart=always
+
+      [Install]
+      WantedBy=multi-user.target
+
+- name: Reload systemd daemon
+  command: systemctl daemon-reload
+
+- name: Enable and start auto-cpufreq service
+  systemd:
+    name: auto-cpufreq
+    enabled: yes
+    state: started
+
+- name: Check auto-cpufreq status
+  command: systemctl status auto-cpufreq
+  register: auto_cpufreq_status
+  changed_when: false
+
+- name: Display auto-cpufreq status
+  debug:
+    var: auto_cpufreq_status.stdout

@@ -1,3 +1,44 @@
+# Usage
+
+This repository contains an Ansible playbook and a custom role for optimizing Linux system performance.
+
+## Playbook: optimize_linux.yml
+
+- Main playbook to apply system optimizations and invoke the `auto-cpufreq` role.
+
+## Role: auto-cpufreq
+
+- Located in `roles/auto-cpufreq/`
+- Contains tasks, variables, and metadata for CPU frequency management.
+
+### Directory Structure
+
+```
+roles/
+  auto-cpufreq/
+    tasks/
+      main.yml
+    vars/
+      main.yml
+    defaults/
+      main.yml
+    meta/
+      main.yml
+optimize_linux.yml
+README.md
+```
+
+## How to Run
+
+```sh
+ansible-playbook -i <inventory> optimize_linux.yml
+```
+
+## Customization
+
+- Edit variables in `roles/auto-cpufreq/vars/main.yml` or `defaults/main.yml` as needed.
+- Add more roles or tasks as required for your environment.
+
 # Latitude 5520 Linux Optimization Ansible Playbook
 
 This repository contains an Ansible playbook (`optimize_linux.yml`) designed to optimize and configure a Dell Latitude 5520 running Linux. The playbook automates a variety of system tweaks, package installations, and configuration changes to improve performance, usability, and security.
